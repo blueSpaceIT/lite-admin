@@ -9,7 +9,7 @@ export const lectureService = baseApi.injectEndpoints({
     uploadChunk: builder.mutation({
       query: ({ uploadId, chunkIndex, chunk }) => ({
         // ✅ use full local URL
-        url: "http://localhost:5000/chunk-upload",
+        url: "https://api.liteedu.com/chunk-upload",
         method: "POST",
         body: chunk,
         headers: {
@@ -21,7 +21,7 @@ export const lectureService = baseApi.injectEndpoints({
 
     finalizeUpload: builder.mutation({
       query: ({ uploadId, fileName }) => ({
-        url: "http://localhost:5000/finalize-upload",
+        url: "https://api.liteedu.com/finalize-upload",
         method: "POST",
         body: { uploadId, fileName },
       }),
