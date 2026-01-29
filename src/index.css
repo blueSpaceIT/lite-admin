@@ -1,0 +1,15 @@
+@layer theme, base, antd, components, utilities;
+
+@import "tailwindcss";
+
+@theme {
+    --font-poppins: "Poppins", sans-serif;
+
+    --color-primary: #c30a0a;
+    --color-secondary: #3f0076;
+    --color-header: #ddfff9;
+    --color-background: #f5fff9;
+    --color-switch: #c5fdde;
+    --color-text: #2d2d2d;
+    --color-text-light: #404040;
+}

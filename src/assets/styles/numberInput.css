@@ -1,0 +1,17 @@
+.ant-input-number-outlined {
+    background: #e2e8f0;
+    border: 0;
+    outline: 0;
+}
+
+.ant-input-number-outlined:focus-within {
+    border: 0;
+    outline: 0;
+    box-shadow: none;
+}
+
+.ant-input-number-group-wrapper-outlined .ant-input-number-group-addon {
+    background: #e2e8f0;
+    border: 0;
+    outline: 0;
+}

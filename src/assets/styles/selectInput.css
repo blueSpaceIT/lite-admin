@@ -1,0 +1,11 @@
+.ant-select-selector {
+    background: #e2e8f0;
+    border: 0;
+    outline: 0;
+}
+
+.ant-select-selector:focus-within {
+    border: 0;
+    outline: 0;
+    box-shadow: none;
+}
