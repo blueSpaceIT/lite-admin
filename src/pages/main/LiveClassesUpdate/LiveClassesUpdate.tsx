@@ -44,13 +44,13 @@ const LiveClassesUpdate = () => {
                 passcode: liveClass?.content.liveClass?.passcode,
                 startTime: liveClass?.content.liveClass?.startTime
                     ? new Date(
-                          liveClass.content.liveClass.startTime
-                      ).toISOString()
+                        liveClass.content.liveClass.startTime
+                    ).toISOString()
                     : "",
                 endTime: liveClass?.content.liveClass?.endTime
                     ? new Date(
-                          liveClass.content.liveClass.endTime
-                      ).toISOString()
+                        liveClass.content.liveClass.endTime
+                    ).toISOString()
                     : "",
             },
         },
@@ -67,7 +67,7 @@ const LiveClassesUpdate = () => {
 
         const result = await updateLiveClass({
             id: liveClassID,
-            ...payload,
+            ...payload
         });
         if (result?.error) {
             toast.error((result?.error as TError)?.data?.message, {

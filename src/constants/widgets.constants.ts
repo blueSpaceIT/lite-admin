@@ -135,4 +135,11 @@ export const widgetItems = [
       USER_ROLES.acountant,
     ],
   },
+  {
+    icon: adminsIcon,
+    title: "Offline Management",
+    destination: "/offline-management",
+    permission: [USER_ROLES.superAdmin, USER_ROLES.admin, USER_ROLES.moderator],
+  }
+
 ];

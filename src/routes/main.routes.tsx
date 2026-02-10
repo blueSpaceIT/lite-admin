@@ -59,6 +59,16 @@ import NewsCreate from "../pages/main/NewsCreate/NewsCreate";
 import NewsUpdate from "../pages/main/NewsUpdate/NewsUpdate";
 import NotesCreate from "../pages/main/NotesCreate/NotesCreate";
 import NotesUpdate from "../pages/main/NotesUpdate/NotesUpdate";
+import OfflineBatch from "../pages/main/OfflineBatch/OfflineBatch";
+import OfflineBatchCreate from "../pages/main/OfflineBatchCreate/OfflineBatchCreate";
+import OfflineBatchUpdate from "../pages/main/OfflineBatchUpdate/OfflineBatchUpdate";
+import OffLineClass from "../pages/main/OffLineClass/OffLineClass";
+import OfflineClassCreate from "../pages/main/OfflineClassCreate/OfflineClassCreate";
+import OfflineClassUpdate from "../pages/main/OfflineClassUpdate/OfflineClassUpdate";
+import OfflineEnrollmentCreate from "../pages/main/OfflineEnrollmentCreate/OfflineEnrollmentCreate";
+import OfflineEnrollmentList from "../pages/main/OfflineEnrollmentList/OfflineEnrollmentList";
+import OfflineEnrollmentUpdate from "../pages/main/OfflineEnrollmentUpdate/OfflineEnrollmentUpdate";
+import OfflineManagement from "../pages/main/OfflineManagement/Offlinemangement";
 import Orders from "../pages/main/Orders/Orders";
 import Payments from "../pages/main/Payments/Payments";
 import PaymentsPrint from "../pages/main/PaymentsPrint/PaymentsPrint";
@@ -390,6 +400,46 @@ export const mainRoutes = [
                 path: "tags",
                 element: <Tags />,
             },
+            {
+                path: "offline-management",
+                element: <OfflineManagement />,
+            },
+            {
+                path: "offline-class",
+                element: <OffLineClass />,
+            },
+            {
+                path: "offline-class-create",
+                element: <OfflineClassCreate />,
+            },
+            {
+                path: "offline-batch",
+                element: <OfflineBatch />,
+            },
+            {
+                path: "offline-batch-create",
+                element: <OfflineBatchCreate />,
+            },
+            {
+                path: "offline-enrollment-create",
+                element: <OfflineEnrollmentCreate />,
+            },
+            {
+                path: "offline-batch-update/:id",
+                element: <OfflineBatchUpdate />,
+            },
+            {
+                path: "offline-class-update/:id",
+                element: <OfflineClassUpdate />,
+            },
+            {
+                path: "offline-enrollment-list",
+                element: <OfflineEnrollmentList />,
+            },
+            {
+                path: "offline-enrollment-update/:id",
+                element: <OfflineEnrollmentUpdate />,
+            }
         ],
     },
 ];

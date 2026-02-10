@@ -48,6 +48,9 @@ export const baseApi = createApi({
         "sliders",
         "students",
         "tags",
+        "class",
+        "offline-batches",
+        "offline-enrollments",
     ],
     endpoints: () => ({}),
 });

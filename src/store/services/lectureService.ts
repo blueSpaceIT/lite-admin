@@ -14,7 +14,8 @@ export const lectureService = baseApi.injectEndpoints({
         body: chunk,
         headers: {
           uploadid: uploadId,
-          chunkindex: chunkIndex.toString(),
+          chunkindex: String(chunkIndex),
+          "content-type": "application/octet-stream",
         },
       }),
     }),
