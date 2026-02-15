@@ -1,5 +1,5 @@
 import { Button } from "@headlessui/react";
-import React from "react";
+import React, { useEffect } from "react";
 import toast from "react-hot-toast";
 import { FaEdit, FaTrashAlt } from "react-icons/fa";
 import { Link } from "react-router-dom";
@@ -117,30 +117,56 @@ const BatchActions = ({ item }: { item: TOfflineBatch }) => {
 
 const OfflineManagement: React.FC = () => {
     // Fetch lists with high limit to show all in the overview
+    // Year state: "" means All Time
+    const [selectedYear, setSelectedYear] = React.useState<string>("");
+    // Month state: "" means Full Year (if year selected) or All Time (if no year)
     const [selectedMonth, setSelectedMonth] = React.useState<string>("");
 
-    const { data: summaryData } = useGetMonthlyOfflineFinancialSummaryQuery(
-        selectedMonth ? { month: selectedMonth } : {}
-    );
+    const { data: summaryData } = useGetMonthlyOfflineFinancialSummaryQuery({
+        year: selectedYear || undefined,
+        month: selectedMonth || undefined,
+    });
 
     const summary: TMonthlyFinancialSummary | null = summaryData?.data || null;
 
-    // Generate month options from January to current month of current year
-    const monthOptions = React.useMemo(() => {
+    // Generate year options (from 2024 to current year)
+    const yearOptions = React.useMemo(() => {
         const options = [{ value: "", label: "All Time" }];
+        const currentYear = new Date().getFullYear();
+        for (let year = 2024; year <= currentYear; year++) {
+            options.push({ value: String(year), label: String(year) });
+        }
+        return options;
+    }, []);
+
+    // Generate month options based on selected year
+    const monthOptions = React.useMemo(() => {
+        if (!selectedYear) return [];
+
+        const options = [{ value: "", label: "Full Year" }];
         const today = new Date();
         const currentYear = today.getFullYear();
-        const currentMonth = today.getMonth(); // 0-indexed
+        const isCurrentYear = String(currentYear) === selectedYear;
+        const maxMonth = isCurrentYear ? today.getMonth() : 11; // 0-indexed
 
-        for (let i = 0; i <= currentMonth; i++) {
+        for (let i = 0; i <= maxMonth; i++) {
             const monthValue = String(i + 1).padStart(2, "0");
-            const value = `${currentYear}-${monthValue}`;
-            const date = new Date(currentYear, i, 1);
+            const value = `${selectedYear}-${monthValue}`;
+            const date = new Date(Number(selectedYear), i, 1);
             const label = date.toLocaleString("default", { month: "long" });
             options.push({ value, label });
         }
         return options;
-    }, []);
+    }, [selectedYear]);
+
+    // Reset month if year changes and month is not compatible
+    useEffect(() => {
+        if (selectedMonth && !selectedYear) {
+            setSelectedMonth("");
+        } else if (selectedMonth && selectedYear && !selectedMonth.startsWith(selectedYear)) {
+            setSelectedMonth("");
+        }
+    }, [selectedYear, selectedMonth]);
 
     const { data: classesData } = offlineClassService.useGetOfflineClassesQuery([
         ["limit", "1000"],
@@ -196,18 +222,41 @@ const OfflineManagement: React.FC = () => {
             </div>
 
             <div className="flex justify-between items-center gap-2 mb-6">
-                <div className="w-48">
-                    <select
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                        value={selectedMonth}
-                        onChange={(e) => setSelectedMonth(e.target.value)}
-                    >
-                        {monthOptions.map((option) => (
-                            <option key={option.value} value={option.value}>
-                                {option.label}
-                            </option>
-                        ))}
-                    </select>
+                <div className="flex items-center gap-2">
+                    {/* Year selection */}
+                    <div className="w-36">
+                        <select
+                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                            value={selectedYear}
+                            onChange={(e) => setSelectedYear(e.target.value)}
+                        >
+                            {yearOptions.map((option) => (
+                                <option key={option.value} value={option.value}>
+                                    {option.label}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    {/* Month selection */}
+                    <div className="w-40">
+                        <select
+                            disabled={!selectedYear}
+                            className={`bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 ${!selectedYear ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            value={selectedMonth}
+                            onChange={(e) => setSelectedMonth(e.target.value)}
+                        >
+                            {!selectedYear ? (
+                                <option value="">Select Year First</option>
+                            ) : (
+                                monthOptions.map((option) => (
+                                    <option key={option.value} value={option.value}>
+                                        {option.label}
+                                    </option>
+                                ))
+                            )}
+                        </select>
+                    </div>
                 </div>
                 <div className="flex gap-2">
                     <Link to={"/offline-class-create"}>

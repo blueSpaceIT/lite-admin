@@ -61,6 +61,9 @@ export const offlineEnrollmentService = baseApi.injectEndpoints({
                 if (params?.month) {
                     queryParams.append("month", params.month);
                 }
+                if (params?.year) {
+                    queryParams.append("year", params.year);
+                }
                 return {
                     url: "/offline-enrollments/financial-summary-monthly",
                     method: "GET",
