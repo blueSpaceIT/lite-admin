@@ -7,7 +7,9 @@ import Swal from "sweetalert2";
 import TitleCard from "../../../components/common/TitleCard/TitleCard";
 import { offlineBatchService } from "../../../store/services/offlineBatchService";
 import { offlineClassService } from "../../../store/services/offlineClassService";
+import { useGetMonthlyOfflineFinancialSummaryQuery } from "../../../store/services/offlineEnrollmentService";
 import type { TData, TError, TOfflineBatch, TOfflineClass } from "../../../types";
+import type { TMonthlyFinancialSummary } from "../../../types/offlineEnrollment.types";
 
 const ClassActions = ({ item }: { item: TOfflineClass }) => {
     const [deleteOfflineClass] = offlineClassService.useDeleteOfflineClassMutation();
@@ -115,6 +117,31 @@ const BatchActions = ({ item }: { item: TOfflineBatch }) => {
 
 const OfflineManagement: React.FC = () => {
     // Fetch lists with high limit to show all in the overview
+    const [selectedMonth, setSelectedMonth] = React.useState<string>("");
+
+    const { data: summaryData } = useGetMonthlyOfflineFinancialSummaryQuery(
+        selectedMonth ? { month: selectedMonth } : {}
+    );
+
+    const summary: TMonthlyFinancialSummary | null = summaryData?.data || null;
+
+    // Generate month options from January to current month of current year
+    const monthOptions = React.useMemo(() => {
+        const options = [{ value: "", label: "All Time" }];
+        const today = new Date();
+        const currentYear = today.getFullYear();
+        const currentMonth = today.getMonth(); // 0-indexed
+
+        for (let i = 0; i <= currentMonth; i++) {
+            const monthValue = String(i + 1).padStart(2, "0");
+            const value = `${currentYear}-${monthValue}`;
+            const date = new Date(currentYear, i, 1);
+            const label = date.toLocaleString("default", { month: "long" });
+            options.push({ value, label });
+        }
+        return options;
+    }, []);
+
     const { data: classesData } = offlineClassService.useGetOfflineClassesQuery([
         ["limit", "1000"],
     ]);
@@ -132,28 +159,79 @@ const OfflineManagement: React.FC = () => {
                     Offline Management
                 </h3>
             </TitleCard>
+            {/* Financial Summary Section */}
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
+                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <h4 className="text-slate-500 text-sm font-medium uppercase">
+                        Total Earnings
+                    </h4>
+                    <p className="text-2xl font-bold text-slate-800 mt-2">
+                        Tk {summary?.totalCourseFee || 0}
+                    </p>
+                </div>
+                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <h4 className="text-slate-500 text-sm font-medium uppercase">
+                        Paid Amount
+                    </h4>
+                    <p className="text-2xl font-bold text-green-600 mt-2">
+                        Tk {summary?.totalPaidAmount || 0}
+                    </p>
+                </div>
+                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <h4 className="text-slate-500 text-sm font-medium uppercase">
+                        Due Amount
+                    </h4>
+                    <p className="text-2xl font-bold text-red-600 mt-2">
+                        Tk {summary?.totalDueAmount || 0}
+                    </p>
+                </div>
+                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <h4 className="text-slate-500 text-sm font-medium uppercase">
+                        Total Enrollments
+                    </h4>
+                    <p className="text-2xl font-bold text-blue-600 mt-2">
+                        {summary?.totalEnrollments || 0}
+                    </p>
+                </div>
+            </div>
 
-            <div className="flex justify-end items-center gap-2 mb-6">
-                <Link to={"/offline-class-create"}>
-                    <Button className="rounded-lg bg-slate-900 px-2.5 py-1.5 text-sm font-medium text-white cursor-pointer">
-                        Create Class
-                    </Button>
-                </Link>
-                <Link to={"/offline-batch-create"}>
-                    <Button className="rounded-lg bg-slate-900 px-2.5 py-1.5 text-sm font-medium text-white cursor-pointer">
-                        Create Batch
-                    </Button>
-                </Link>
-                <Link to={"/offline-enrollment-create"}>
-                    <Button className="rounded-lg bg-slate-900 px-2.5 py-1.5 text-sm font-medium text-white cursor-pointer">
-                        Create Enrollment
-                    </Button>
-                </Link>
-                <Link to={"/offline-enrollment-list"}>
-                    <Button className="rounded-lg bg-slate-900 px-2.5 py-1.5 text-sm font-medium text-white cursor-pointer">
-                        See Enrollments
-                    </Button>
-                </Link>
+            <div className="flex justify-between items-center gap-2 mb-6">
+                <div className="w-48">
+                    <select
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                        value={selectedMonth}
+                        onChange={(e) => setSelectedMonth(e.target.value)}
+                    >
+                        {monthOptions.map((option) => (
+                            <option key={option.value} value={option.value}>
+                                {option.label}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+                <div className="flex gap-2">
+                    <Link to={"/offline-class-create"}>
+                        <Button className="rounded-lg bg-slate-900 px-2.5 py-1.5 text-sm font-medium text-white cursor-pointer">
+                            Create Class
+                        </Button>
+                    </Link>
+                    <Link to={"/offline-batch-create"}>
+                        <Button className="rounded-lg bg-slate-900 px-2.5 py-1.5 text-sm font-medium text-white cursor-pointer">
+                            Create Batch
+                        </Button>
+                    </Link>
+                    <Link to={"/offline-enrollment-create"}>
+                        <Button className="rounded-lg bg-slate-900 px-2.5 py-1.5 text-sm font-medium text-white cursor-pointer">
+                            Create Enrollment
+                        </Button>
+                    </Link>
+                    <Link to={"/offline-enrollment-list"}>
+                        <Button className="rounded-lg bg-slate-900 px-2.5 py-1.5 text-sm font-medium text-white cursor-pointer">
+                            See Enrollments
+                        </Button>
+                    </Link>
+
+                </div>
             </div>
 
             <div className="flex flex-col gap-6">
@@ -240,7 +318,7 @@ const OfflineManagement: React.FC = () => {
                     })
                 )}
             </div>
-        </div>
+        </div >
     );
 };
 

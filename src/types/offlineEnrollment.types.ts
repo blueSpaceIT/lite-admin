@@ -47,3 +47,11 @@ export type TAddPaymentPayload = {
     autoGenerateInvoice?: boolean;
     sendSMS?: boolean;
 };
+
+export type TMonthlyFinancialSummary = {
+    _id: null;
+    totalCourseFee: number;
+    totalPaidAmount: number;
+    totalDueAmount: number;
+    totalEnrollments: number;
+};

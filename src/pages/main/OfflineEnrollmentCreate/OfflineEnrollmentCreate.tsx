@@ -22,8 +22,7 @@ import type { TOfflineEnrollment } from "../../../types/offlineEnrollment.types"
 const enrollmentValidationSchema = z.object({
     studentName: z.string().min(1, "Student name is required"),
     phone: z.string().min(11, "Valid phone number is required"),
-    studentId: z.string().min(1, "Student ID is required"),
-    email: z.string().email().optional().or(z.literal("")),
+
     address: z.string().optional(),
     courseFee: z.number().min(0, "Course fee must be positive"),
     class: z.string().min(1, "Class is required"),
@@ -105,7 +104,7 @@ const OfflineEnrollmentCreate: React.FC = () => {
             const enrollmentData = {
                 studentName: data.studentName,
                 phone: data.phone,
-                studentId: data.studentId,
+
                 email: data.email || undefined,
                 address: data.address || undefined,
                 courseFee: Number(data.courseFee),
@@ -165,11 +164,7 @@ const OfflineEnrollmentCreate: React.FC = () => {
                         label="Phone"
                         placeholder="Enter phone number"
                     />
-                    <InputField
-                        name="studentId"
-                        label="Student ID"
-                        placeholder="Enter student ID"
-                    />
+
                     <InputField
                         name="email"
                         label="Email (Optional)"

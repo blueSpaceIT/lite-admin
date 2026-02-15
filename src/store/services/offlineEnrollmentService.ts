@@ -55,6 +55,20 @@ export const offlineEnrollmentService = baseApi.injectEndpoints({
             }),
             providesTags: ["offline-enrollments"],
         }),
+        getMonthlyOfflineFinancialSummary: builder.query({
+            query: (params) => {
+                const queryParams = new URLSearchParams();
+                if (params?.month) {
+                    queryParams.append("month", params.month);
+                }
+                return {
+                    url: "/offline-enrollments/financial-summary-monthly",
+                    method: "GET",
+                    params: queryParams,
+                };
+            },
+            providesTags: ["offline-enrollments"],
+        }),
         getOfflineReports: builder.query({
             query: () => ({
                 url: "/offline-enrollments/reports",
@@ -73,5 +87,6 @@ export const {
     useDeleteOfflineEnrollmentMutation,
     useAddOfflinePaymentMutation,
     useGetOfflineFinancialSummaryQuery,
+    useGetMonthlyOfflineFinancialSummaryQuery,
     useGetOfflineReportsQuery,
 } = offlineEnrollmentService;
