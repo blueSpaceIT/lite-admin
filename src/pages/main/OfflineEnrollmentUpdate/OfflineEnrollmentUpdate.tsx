@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useEffect, useState } from "react";
+import { useFormContext } from "react-hook-form";
 import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
 import Swal from "sweetalert2";
@@ -36,6 +37,45 @@ const addPaymentSchema = z.object({
     month: z.string().optional(),
     note: z.string().optional(),
 });
+
+const EnrollmentUpdateFields = ({ classOptions, batchOptions, statusOptions, setSelectedClassId, selectedClassId }: any) => {
+    const { setValue } = useFormContext();
+    return (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <InputField name="studentName" label="Student Name" placeholder="Enter student name" />
+            <InputField name="phone" label="Phone" placeholder="Enter phone number" />
+            <InputField name="studentId" label="Student ID" placeholder="Enter student ID" />
+            <InputField name="email" label="Email (Optional)" placeholder="Enter email address" />
+            <div className="md:col-span-2">
+                <InputField name="address" label="Address (Optional)" placeholder="Enter address" />
+            </div>
+            <NumberField name="courseFee" label="Course Fee" />
+            <SelectField
+                name="status"
+                label="Enrollment Status"
+                options={statusOptions}
+                placeholder="Select status"
+            />
+            <SelectField
+                name="class"
+                label="Class"
+                options={classOptions}
+                placeholder="Select class"
+                onChange={(val) => {
+                    setSelectedClassId(val);
+                    setValue("batch", "");
+                }}
+            />
+            <SelectField
+                name="batch"
+                label="Batch"
+                options={batchOptions}
+                placeholder="Select batch"
+                disable={!selectedClassId}
+            />
+        </div>
+    );
+};
 
 const OfflineEnrollmentUpdate: React.FC = () => {
     const { id } = useParams();
@@ -164,38 +204,13 @@ const OfflineEnrollmentUpdate: React.FC = () => {
                         resolver={zodResolver(enrollmentUpdateSchema)}
                         defaultValues={defaultValues}
                     >
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <InputField name="studentName" label="Student Name" placeholder="Enter student name" />
-                            <InputField name="phone" label="Phone" placeholder="Enter phone number" />
-                            <InputField name="studentId" label="Student ID" placeholder="Enter student ID" />
-                            <InputField name="email" label="Email (Optional)" placeholder="Enter email address" />
-                            <div className="md:col-span-2">
-                                <InputField name="address" label="Address (Optional)" placeholder="Enter address" />
-                            </div>
-                            <NumberField name="courseFee" label="Course Fee" />
-                            <SelectField
-                                name="status"
-                                label="Enrollment Status"
-                                options={statusOptions}
-                                placeholder="Select status"
-                            />
-                            <SelectField
-                                name="class"
-                                label="Class"
-                                options={classOptions}
-                                placeholder="Select class"
-                                onChange={(val) => {
-                                    setSelectedClassId(val);
-                                }}
-                            />
-                            <SelectField
-                                name="batch"
-                                label="Batch"
-                                options={batchOptions}
-                                placeholder="Select batch"
-                                disable={!selectedClassId}
-                            />
-                        </div>
+                        <EnrollmentUpdateFields
+                            classOptions={classOptions}
+                            batchOptions={batchOptions}
+                            statusOptions={statusOptions}
+                            setSelectedClassId={setSelectedClassId}
+                            selectedClassId={selectedClassId}
+                        />
                         <div className="mt-6">
                             <FormButton>Update Details</FormButton>
                         </div>

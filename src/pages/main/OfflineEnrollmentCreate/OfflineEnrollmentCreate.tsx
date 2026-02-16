@@ -38,6 +38,7 @@ const enrollmentValidationSchema = z.object({
 const ClassSelectField = () => {
     const [classes, setClasses] = useState<{ value: string; label: string }[]>([]);
     const { data: classesData } = offlineClassService.useGetOfflineClassesQuery([]);
+    const { setValue } = useFormContext();
 
     useEffect(() => {
         if (classesData?.data) {
@@ -56,6 +57,9 @@ const ClassSelectField = () => {
             label="Class"
             options={classes}
             disable={!classes.length}
+            onChange={() => {
+                setValue("batch", "");
+            }}
         />
     );
 };

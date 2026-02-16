@@ -8,6 +8,7 @@ import Table from "../../../components/common/Table/Table";
 import TitleCard from "../../../components/common/TitleCard/TitleCard";
 import { offlineClassService } from "../../../store/services/offlineClassService";
 import type { TData, TError, TMeta, TOfflineClass, TTableData, TTableHeadingData } from "../../../types";
+import OffLineClassUpdateModal from "./components/OffLineClassUpdateModal";
 
 const ActionBtns = ({ item }: { item: TOfflineClass }) => {
   const [deleteOfflineClass] = offlineClassService.useDeleteOfflineClassMutation();
@@ -40,10 +41,12 @@ const ActionBtns = ({ item }: { item: TOfflineClass }) => {
 
   return (
     <div className="flex justify-center items-center gap-3">
+      <OffLineClassUpdateModal item={item} />
       <Button
         type="button"
         onClick={handleDelete}
-        className="text-red-600 bg-red-100 hover:bg-red-200 focus:ring-4 focus:outline-none font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center cursor-pointer"
+        className="text-red-600 bg-red-100 hover:bg-red-200 focus:ring-4 focus:outline-none font-medium rounded-full text-sm p-2 text-center inline-flex items-center cursor-pointer"
+        title="Delete Class"
       >
         <FaTrashAlt className="w-4 h-4" />
       </Button>

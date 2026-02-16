@@ -8,6 +8,7 @@ import Table from "../../../components/common/Table/Table";
 import TitleCard from "../../../components/common/TitleCard/TitleCard";
 import { offlineBatchService } from "../../../store/services/offlineBatchService";
 import type { TData, TError, TMeta, TOfflineBatch, TTableData, TTableHeadingData } from "../../../types";
+import OfflineBatchUpdateModal from "./components/OfflineBatchUpdateModal";
 
 const ActionBtns = ({ item }: { item: TOfflineBatch }) => {
     const [deleteOfflineBatch] = offlineBatchService.useDeleteOfflineBatchMutation();
@@ -40,10 +41,12 @@ const ActionBtns = ({ item }: { item: TOfflineBatch }) => {
 
     return (
         <div className="flex justify-center items-center gap-3">
+            <OfflineBatchUpdateModal item={item} />
             <Button
                 type="button"
                 onClick={handleDelete}
-                className="text-red-600 bg-red-100 hover:bg-red-200 focus:ring-4 focus:outline-none font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center cursor-pointer"
+                className="text-red-600 bg-red-100 hover:bg-red-200 focus:ring-4 focus:outline-none font-medium rounded-full text-sm p-2 text-center inline-flex items-center cursor-pointer"
+                title="Delete Batch"
             >
                 <FaTrashAlt className="w-4 h-4" />
             </Button>
