@@ -22,6 +22,7 @@ export type TOfflineEnrollment = {
     courseFee: number;
     paidAmount: number;
     dueAmount: number;
+    calculatedDue?: number;
     paymentStatus: 'Paid' | 'Partial' | 'Due' | 'Refunded';
     payments: TPayment[];
     enrollmentDate: string;

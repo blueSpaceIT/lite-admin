@@ -30,6 +30,7 @@ const OfflineManagement: React.FC = () => {
     // Filter & Pagination State
     const [selectedClass, setSelectedClass] = useState<string>("");
     const [selectedBatch, setSelectedBatch] = useState<string>("");
+    const [selectedDueStatus, setSelectedDueStatus] = useState<string>("");
     const [searchQuery, setSearchQuery] = useState<string>("");
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -134,6 +135,11 @@ const OfflineManagement: React.FC = () => {
         setSelectedBatch("");
     }, [selectedClass]);
 
+    // Reset due status if batch changes
+    useEffect(() => {
+        setSelectedDueStatus("");
+    }, [selectedBatch]);
+
     // Helper maps for ID to Title resolution
     const classMap = useMemo(() => new Map(classes.map(c => [c._id, c.title])), [classes]);
     const batchMap = useMemo(() => new Map(batches.map(b => [b._id, b.title])), [batches]);
@@ -198,17 +204,16 @@ const OfflineManagement: React.FC = () => {
                 if (enrollmentBatchId !== selectedBatch) return false;
             }
 
-            // Search Query
-            if (searchQuery) {
-                const search = searchQuery.toLowerCase();
-                const nameMatch = enrollment.studentName?.toLowerCase().includes(search);
-                const idMatch = enrollment.studentId?.toLowerCase().includes(search);
-                if (!nameMatch && !idMatch) return false;
+            // Due Filter
+            if (selectedDueStatus) {
+                const dueAmount = enrollment.calculatedDue ?? enrollment.dueAmount;
+                if (selectedDueStatus === "due" && (dueAmount === undefined || dueAmount <= 0)) return false;
+                if (selectedDueStatus === "paid" && (dueAmount !== undefined && dueAmount > 0)) return false;
             }
 
             return true;
         });
-    }, [enrollments, selectedClass, selectedBatch, searchQuery, batchToClassMap]);
+    }, [enrollments, selectedClass, selectedBatch, searchQuery, batchToClassMap, selectedDueStatus]);
 
     // Frontend Pagination
     const totalPages = Math.ceil(filteredEnrollments.length / itemsPerPage);
@@ -220,7 +225,7 @@ const OfflineManagement: React.FC = () => {
     // Reset to page 1 when filters change
     useEffect(() => {
         setCurrentPage(1);
-    }, [selectedClass, selectedBatch, searchQuery]);
+    }, [selectedClass, selectedBatch, searchQuery, selectedDueStatus]);
 
     return (
         <div className="mb-10">
@@ -383,6 +388,18 @@ const OfflineManagement: React.FC = () => {
                                     <option key={batch._id} value={batch._id}>{batch.title}</option>
                                 ))}
                             </select>
+
+                            {/* Due Filter */}
+                            <select
+                                disabled={!selectedBatch}
+                                className={`bg-white border border-slate-200 text-slate-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full sm:w-44 p-2 shadow-sm ${!selectedBatch ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                value={selectedDueStatus}
+                                onChange={(e) => setSelectedDueStatus(e.target.value)}
+                            >
+                                <option value="">All Due Status</option>
+                                <option value="due">Has Due</option>
+                                <option value="paid">No Due (Paid)</option>
+                            </select>
                         </div>
                     </div>
 
@@ -431,7 +448,7 @@ const OfflineManagement: React.FC = () => {
                                             </td>
                                             <td className="px-6 py-4 text-sm font-bold text-slate-700">৳{enrollment.courseFee}</td>
                                             <td className="px-6 py-4 text-sm font-black text-green-600">৳{enrollment.paidAmount}</td>
-                                            <td className="px-6 py-4 text-sm font-black text-rose-600">৳{enrollment.dueAmount}</td>
+                                            <td className="px-6 py-4 text-sm font-black text-rose-600">৳{enrollment.calculatedDue ?? enrollment.dueAmount}</td>
                                             <td className="px-6 py-4 text-center">
                                                 <span className={`inline-flex px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${enrollment.status === 'Active' ? 'bg-green-100 text-green-700 border border-green-200' :
                                                     enrollment.status === 'Completed' ? 'bg-blue-100 text-blue-700 border border-blue-200' : 'bg-rose-100 text-rose-700 border border-rose-200'

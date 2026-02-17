@@ -5,7 +5,6 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { z } from "zod";
-import DateTimeField from "../../../components/common/Form/DateTimeField";
 import Form from "../../../components/common/Form/Form";
 import FormButton from "../../../components/common/Form/FormButton";
 import InputField from "../../../components/common/Form/InputField";
@@ -27,12 +26,6 @@ const enrollmentValidationSchema = z.object({
     courseFee: z.number().min(0, "Course fee must be positive"),
     class: z.string().min(1, "Class is required"),
     batch: z.string().min(1, "Batch is required"),
-    month: z.string().optional(),
-    paymentAmount: z.number().min(0, "Payment amount must be positive"),
-    paymentMethod: z.string().min(1, "Payment method is required"),
-    transactionId: z.string().optional(),
-    paymentDate: z.string().min(1, "Payment date is required"),
-    note: z.string().optional(),
 });
 
 const ClassSelectField = () => {
@@ -114,16 +107,7 @@ const OfflineEnrollmentCreate: React.FC = () => {
                 courseFee: Number(data.courseFee),
                 class: data.class,
                 batch: data.batch,
-                payments: [
-                    {
-                        amount: Number(data.paymentAmount),
-                        method: data.paymentMethod,
-                        transactionId: data.transactionId || "",
-                        paymentDate: data.paymentDate,
-                        note: data.note || "",
-                        month: data.month || "",
-                    },
-                ],
+                month: `${new Date().getFullYear()}-${new Date().getMonth() + 1}`,
             };
 
             const response = await createOfflineEnrollment(enrollmentData);
@@ -185,42 +169,6 @@ const OfflineEnrollmentCreate: React.FC = () => {
                     />
                     <ClassSelectField />
                     <BatchSelectField />
-                    <InputField
-                        name="month"
-                        label="Month (Optional)"
-                        placeholder="e.g., January"
-                    />
-                    <NumberField
-                        name="paymentAmount"
-                        label="Payment Amount"
-                    />
-                    <SelectField
-                        name="paymentMethod"
-                        label="Payment Method"
-                        placeholder="Select payment method"
-                        options={[
-                            { value: "Bkash", label: "Bkash" },
-                            { value: "Nagad", label: "Nagad" },
-                            { value: "Bank", label: "Bank" },
-                            { value: "Cash", label: "Cash" },
-                            { value: "paystation", label: "Paystation" },
-                            { value: "Other", label: "Other" },
-                        ]}
-                    />
-                    <InputField
-                        name="transactionId"
-                        label="Transaction ID"
-                        placeholder="Enter transaction ID"
-                    />
-                    <DateTimeField
-                        name="paymentDate"
-                        label="Payment Date"
-                    />
-                    <InputField
-                        name="note"
-                        label="Note (Optional)"
-                        placeholder="Enter payment note"
-                    />
                 </div>
                 <div className="mt-5">
                     <FormButton>Create Enrollment</FormButton>

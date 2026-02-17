@@ -1,7 +1,9 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Radio } from "antd";
 import React, { useEffect, useState } from "react";
-import { useFormContext } from "react-hook-form";
+import { Controller, useFormContext } from "react-hook-form";
 import toast from "react-hot-toast";
+import { FaDownload } from "react-icons/fa";
 import { useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import { z } from "zod";
@@ -36,6 +38,7 @@ const addPaymentSchema = z.object({
     paymentDate: z.string().min(1, "Payment date is required"),
     month: z.string().optional(),
     note: z.string().optional(),
+    notificationType: z.enum(['sms', 'invoice', 'none']).default('none'),
 });
 
 const EnrollmentUpdateFields = ({ classOptions, batchOptions, statusOptions, setSelectedClassId, selectedClassId }: any) => {
@@ -73,6 +76,81 @@ const EnrollmentUpdateFields = ({ classOptions, batchOptions, statusOptions, set
                 placeholder="Select batch"
                 disable={!selectedClassId}
             />
+        </div>
+    );
+};
+
+const PaymentRecordFields = ({ paymentMethodOptions }: { paymentMethodOptions: any[] }) => {
+    const { setValue } = useFormContext();
+    const currentYear = new Date().getFullYear();
+    const [selectedYear, setSelectedYear] = useState<string>(currentYear.toString());
+
+    const yearOptions = [
+        { value: (currentYear - 1).toString(), label: (currentYear - 1).toString() },
+        { value: currentYear.toString(), label: currentYear.toString() },
+        { value: (currentYear + 1).toString(), label: (currentYear + 1).toString() },
+    ];
+
+    const generateMonthOptions = (year: string) => {
+        const months = [
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        ];
+        return months.map((month, index) => ({
+            value: `${year}-${(index + 1).toString().padStart(2, '0')}`,
+            label: `${month} ${year}`
+        }));
+    };
+
+    const monthOptions = generateMonthOptions(selectedYear);
+
+    return (
+        <div className="space-y-1">
+            <NumberField name="amount" label="Payment Amount" />
+            <SelectField
+                name="method"
+                label="Method"
+                options={paymentMethodOptions}
+                placeholder="Select method"
+            />
+            <InputField name="transactionId" label="Transaction ID" placeholder="Optional" />
+            <DateTimeField name="paymentDate" label="Payment Date" />
+            <div className="grid grid-cols-2 gap-2">
+                <SelectField
+                    name="paymentYear"
+                    label="Select Year"
+                    options={yearOptions}
+                    placeholder="Year"
+                    onChange={(val) => {
+                        setSelectedYear(val);
+                        setValue("month", "");
+                    }}
+                />
+                <SelectField
+                    name="month"
+                    label="Select Month"
+                    options={monthOptions}
+                    placeholder="Month"
+                    disable={!selectedYear}
+                />
+            </div>
+            <InputField name="note" label="Note" placeholder="Optional" />
+
+            <div className="mb-4">
+                <label className="text-sm text-slate-500 font-semibold mb-2 block">
+                    Notification Option
+                </label>
+                <Controller
+                    name="notificationType"
+                    render={({ field }) => (
+                        <Radio.Group {...field} className="flex flex-col gap-2">
+                            <Radio value="none">None</Radio>
+                            <Radio value="sms">Send SMS</Radio>
+                            <Radio value="invoice">Generate Invoice</Radio>
+                        </Radio.Group>
+                    )}
+                />
+            </div>
         </div>
     );
 };
@@ -120,9 +198,12 @@ const OfflineEnrollmentUpdate: React.FC = () => {
 
     const handleAddPayment = async (data: any) => {
         try {
+            const { notificationType, ...paymentData } = data;
             const response = await addPayment({
                 enrollmentId: id,
-                payment: data
+                payment: paymentData,
+                sendSMS: notificationType === 'sms',
+                autoGenerateInvoice: notificationType === 'invoice'
             });
 
             if (response?.error) {
@@ -227,6 +308,7 @@ const OfflineEnrollmentUpdate: React.FC = () => {
                                     <th className="py-3 text-slate-500 font-semibold text-sm">Method</th>
                                     <th className="py-3 text-slate-500 font-semibold text-sm">Amount</th>
                                     <th className="py-3 text-slate-500 font-semibold text-sm">Txn ID</th>
+                                    <th className="py-3 text-slate-500 font-semibold text-sm text-right">Invoice</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -238,6 +320,21 @@ const OfflineEnrollmentUpdate: React.FC = () => {
                                         </td>
                                         <td className="py-3 text-sm font-bold text-green-600">৳{payment.amount}</td>
                                         <td className="py-3 text-sm text-slate-500">{payment.transactionId || "-"}</td>
+                                        <td className="py-3 text-sm text-right">
+                                            {payment.invoiceUrl ? (
+                                                <a
+                                                    href={payment.invoiceUrl}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="inline-flex items-center justify-center p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-all"
+                                                    title="Download Invoice"
+                                                >
+                                                    <FaDownload className="w-4 h-4" />
+                                                </a>
+                                            ) : (
+                                                <span className="text-slate-300">-</span>
+                                            )}
+                                        </td>
                                     </tr>
                                 ))}
                                 {(!currentEnrollment?.payments || currentEnrollment.payments.length === 0) && (
@@ -266,7 +363,7 @@ const OfflineEnrollmentUpdate: React.FC = () => {
                         <div className="divide-y divide-slate-100" />
                         <div className="flex justify-between items-center text-base pt-1">
                             <span className="text-slate-500 font-bold">Due Balance:</span>
-                            <span className="font-black text-rose-600 text-lg">৳{currentEnrollment?.dueAmount}</span>
+                            <span className="font-black text-rose-600 text-lg">৳{currentEnrollment?.calculatedDue ?? currentEnrollment?.dueAmount}</span>
                         </div>
                     </div>
                 </div>
@@ -276,20 +373,12 @@ const OfflineEnrollmentUpdate: React.FC = () => {
                     <Form
                         onSubmit={handleAddPayment}
                         resolver={zodResolver(addPaymentSchema)}
+                        defaultValues={{
+                            paymentYear: new Date().getFullYear().toString(),
+                            notificationType: 'none'
+                        }}
                     >
-                        <div className="space-y-1">
-                            <NumberField name="amount" label="Payment Amount" />
-                            <SelectField
-                                name="method"
-                                label="Method"
-                                options={paymentMethodOptions}
-                                placeholder="Select method"
-                            />
-                            <InputField name="transactionId" label="Transaction ID" placeholder="Optional" />
-                            <DateTimeField name="paymentDate" label="Payment Date" />
-                            <InputField name="month" label="Month" placeholder="Optional (e.g., January)" />
-                            <InputField name="note" label="Note" placeholder="Optional" />
-                        </div>
+                        <PaymentRecordFields paymentMethodOptions={paymentMethodOptions} />
                         <div className="mt-6">
                             <FormButton >
                                 Record Payment

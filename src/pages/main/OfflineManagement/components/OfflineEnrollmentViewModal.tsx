@@ -159,7 +159,7 @@ const OfflineEnrollmentViewModal = ({ enrollment, classTitle, batchTitle }: Prop
                                             </div>
                                             <div className="pt-2 border-t border-slate-200 flex justify-between items-center">
                                                 <span className="text-xs font-black text-slate-500 uppercase">Due Balance</span>
-                                                <span className="text-lg font-black text-rose-600">৳{enrollment.dueAmount}</span>
+                                                <span className="text-lg font-black text-rose-600">৳{enrollment.calculatedDue ?? enrollment.dueAmount}</span>
                                             </div>
                                         </div>
                                     </div>

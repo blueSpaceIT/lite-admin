@@ -1,15 +1,15 @@
+import { Button, Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
+import { useState } from "react";
+import { Toaster } from "react-hot-toast";
+import { FaHome } from "react-icons/fa";
 import { Link, Navigate, Outlet } from "react-router-dom";
-import profileImg from "/profile.png";
 import { useAppDispatch, useAppSelector } from "../../store/hook";
 import {
     signout,
     useCurrentToken,
     useCurrentUser,
 } from "../../store/slices/authSlice";
-import { Toaster } from "react-hot-toast";
-import { FaHome } from "react-icons/fa";
-import { useState } from "react";
-import { Button, Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
+import profileImg from "/profile.png";
 
 const SignoutModal = () => {
     const [isOpen, setIsOpen] = useState(false);
