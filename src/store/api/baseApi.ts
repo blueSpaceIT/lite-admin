@@ -51,6 +51,7 @@ export const baseApi = createApi({
         "class",
         "offline-batches",
         "offline-enrollments",
+        "home-video-sections",
     ],
     endpoints: () => ({}),
 });

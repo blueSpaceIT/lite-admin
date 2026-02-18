@@ -140,6 +140,11 @@ export const widgetItems = [
     title: "Offline Management",
     destination: "/offline-management",
     permission: [USER_ROLES.superAdmin, USER_ROLES.admin, USER_ROLES.moderator],
+  },
+  {
+    icon: slidersIcon,
+    title: "Home Video Section",
+    destination: "/home-video-sections",
+    permission: [USER_ROLES.superAdmin, USER_ROLES.admin, USER_ROLES.moderator],
   }
-
 ];

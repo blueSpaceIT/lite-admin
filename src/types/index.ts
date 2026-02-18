@@ -11,6 +11,7 @@ export * from "./courseCategory.types";
 export * from "./courseContent.types";
 export * from "./courseReview.types";
 export * from "./examAttempt.types";
+export * from "./homeVideoSection.types";
 export * from "./marquee.types";
 export * from "./media.types";
 export * from "./module.types";

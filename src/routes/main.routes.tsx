@@ -42,6 +42,9 @@ import Filter from "../pages/main/Filter/Filter";
 import Gallery from "../pages/main/Gallery/Gallery";
 import Headlines from "../pages/main/Headlines/Headlines";
 import Home from "../pages/main/Home/Home";
+import HomeVideoSections from "../pages/main/HomeVideoSections/HomeVideoSections";
+import HomeVideoSectionsCreate from "../pages/main/HomeVideoSectionsCreate/HomeVideoSectionsCreate";
+import HomeVideoSectionsUpdate from "../pages/main/HomeVideoSectionsUpdate/HomeVideoSectionsUpdate";
 import LecturesCreate from "../pages/main/LecturesCreate/LecturesCreate";
 import LecturesUpdate from "../pages/main/LecturesUpdate/LecturesUpdate";
 import LiveClassesCreate from "../pages/main/LiveClassesCreate/LiveClassesCreate";
@@ -439,6 +442,18 @@ export const mainRoutes = [
             {
                 path: "offline-enrollment-update/:id",
                 element: <OfflineEnrollmentUpdate />,
+            },
+            {
+                path: "home-video-sections",
+                element: <HomeVideoSections />,
+            },
+            {
+                path: "home-video-sections-create",
+                element: <HomeVideoSectionsCreate />,
+            },
+            {
+                path: "home-video-sections-update/:id",
+                element: <HomeVideoSectionsUpdate />,
             }
         ],
     },
